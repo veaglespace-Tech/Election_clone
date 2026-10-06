@@ -14,7 +14,7 @@ PUNE ENGLISH TEACHERS VOTERS  JAN 2026/
 
 # Environment & Credentials (if any added in future)
 .env
-.env.local
+.env.*
 
 # OS & Editor Files
 .DS_Store

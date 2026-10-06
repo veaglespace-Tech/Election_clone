@@ -8,30 +8,7 @@
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 
-// ── DB Config ─────────────────────────────────────────────────────────────
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'election_clone_db');
-define('DB_USER', 'election_app');
-define('DB_PASS', 'Veagle@12345');
-define('DB_PORT', 3306);
-
-function getDB(): PDO
-{
-    static $pdo = null;
-    if ($pdo)
-        return $pdo;
-    $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4;port=' . DB_PORT;
-    $options = [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    ];
-    try {
-        $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
-    } catch (PDOException $e) {
-        $pdo = new PDO($dsn, 'election_app', 'Veagle@12345', $options);
-    }
-    return $pdo;
-}
+require_once __DIR__ . '/db.php';
 
 // ── Input sanitization ────────────────────────────────────────────────────
 function inp(string $key, $default = '')

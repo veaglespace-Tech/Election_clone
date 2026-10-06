@@ -1,7 +1,7 @@
 {
-  "name": "पुणे शिक्षक मतदारसंघ निवडणूक २०२६ - सुनीलभाऊ जगताप",
-  "short_name": "सुनीलभाऊ जगताप",
-  "description": "Maharashtra State Legislative Council Electoral Roll 2026 – PUNE Division Teachers' Constituency.",
+  "name": "Your Campaign Name - Your Candidate Name",
+  "short_name": "Your Candidate Name",
+  "description": "Your Campaign/Election Description here.",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
