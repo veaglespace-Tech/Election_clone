@@ -626,6 +626,12 @@
       <span class="nav-badge" id="navBadge">—</span>
     </a>
 
+    <a class="nav-item" id="nav-visitors" onclick="showSection('visitors'); loadVisitors();">
+      <span class="nav-icon">👥</span>
+      Visitors
+      <span class="nav-badge" id="navVisitorsBadge">—</span>
+    </a>
+
     <!-- <div class="nav-section-label">Actions</div>
 
     <a class="nav-item" id="nav-download" onclick="showSection('download')">
@@ -815,6 +821,38 @@
       </div>
     </div>
 
+    <!-- ── Visitors Section ───────────────────────────────────────────── -->
+    <div class="section" id="section-visitors">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <div class="section-title">👥 Registered Visitors</div>
+          <div class="section-subtitle">View people who have accessed the public portal</div>
+        </div>
+        <button class="btn btn-icon" onclick="loadVisitors()">🔄</button>
+      </div>
+
+      <!-- Table -->
+      <div class="table-card">
+        <div class="table-header">
+          <span class="table-title">Visitor Records</span>
+          <span id="visitorsTableBadge" style="font-size:0.78rem;color:var(--text2);">Loading…</span>
+        </div>
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Mobile Number</th>
+                <th>Registration Date</th>
+              </tr>
+            </thead>
+            <tbody id="visitorsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <!-- ── Download Section ───────────────────────────────────────────── -->
     <div class="section" id="section-download">
       <div class="section-header">
@@ -912,6 +950,7 @@ const sectionTitles = {
   overview : ['Dashboard Overview',   'Summary of all elector data'],
   data     : ['Elector Records',      'Browse, search and filter all electors'],
   download : ['Download & Export',    'Export elector data in various formats'],
+  visitors : ['Registered Visitors',  'View people who have accessed the public portal'],
 };
 
 function showSection(id) {
@@ -1019,6 +1058,39 @@ async function loadGenderStats() {
     `;
   } catch(e) {}
 }
+
+// ── Load Visitors Data ────────────────────────────────────────────────────────
+async function loadVisitors() {
+  document.getElementById('visitorsTableBody').innerHTML = '<tr><td colspan="4">Loading visitors...</td></tr>';
+  try {
+    const res = await fetch('api_visitors.php');
+    if (!res.ok) throw new Error('Failed to load visitors');
+    const j = await res.json();
+    if (!j.success) throw new Error(j.error);
+    
+    document.getElementById('navVisitorsBadge').textContent = j.total;
+    document.getElementById('visitorsTableBadge').textContent = j.total + ' records';
+    
+    if (j.data.length === 0) {
+      document.getElementById('visitorsTableBody').innerHTML = '<tr><td colspan="4">No visitors found.</td></tr>';
+      return;
+    }
+    
+    let html = '';
+    for (const r of j.data) {
+      html += `<tr>
+        <td style="padding:1rem;">${r.id}</td>
+        <td style="font-weight:600;padding:1rem;">${r.name}</td>
+        <td style="padding:1rem;">${r.mobile}</td>
+        <td style="padding:1rem;">${new Date(r.created_at).toLocaleString('en-IN')}</td>
+      </tr>`;
+    }
+    document.getElementById('visitorsTableBody').innerHTML = html;
+  } catch (e) {
+    document.getElementById('visitorsTableBody').innerHTML = '<tr><td colspan="4">Error loading visitors: ' + e.message + '</td></tr>';
+  }
+}
+
 
 // ── Load Elector Data ────────────────────────────────────────────────────────
 async function loadData() {
