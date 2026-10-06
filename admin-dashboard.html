@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Dashboard — Election 2026</title>
+  <script>
+    // ── Instant Auth Guard (runs before any HTML renders) ──
+    if (!sessionStorage.getItem('admin_auth')) {
+      window.location.replace('admin-login.html');
+    }
+  </script>
   <meta name="description" content="Admin dashboard for Pune Shikshak Matdar Sangh Election 2026." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -879,11 +885,8 @@
 </div><!-- /main-area -->
 
 <script>
-// ── Auth Guard ──────────────────────────────────────────────────────────────
+// ── Auth Guard (already handled in <head>, just set admin info) ────────────
 (function() {
-  if (!sessionStorage.getItem('admin_auth')) {
-    window.location.href = 'admin-login.html';
-  }
   // Set admin name
   const email = sessionStorage.getItem('admin_email') || '';
   const name  = email.split('@')[0] || 'Admin';
