@@ -470,6 +470,77 @@
       .gender-badge { border: 1px solid #000; background: transparent !important; color: #000 !important; }
       mark.hl { background: transparent !important; color: inherit !important; font-weight: inherit !important; }
     }
+
+    /* ── Visitor Overlay ──────────────────────────────────────────────── */
+    #visitorOverlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(252, 250, 246, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    #visitorOverlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .visitor-card {
+      background: var(--bg2);
+      padding: 2.5rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 420px;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+    .visitor-card h3 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+    .visitor-card p {
+      font-size: 0.85rem;
+      color: var(--text3);
+      margin-bottom: 1.5rem;
+    }
+    .visitor-card .field {
+      text-align: left;
+      margin-bottom: 1rem;
+    }
+    .visitor-card .field input {
+      font-size: 0.95rem;
+      padding: 0.75rem 1rem;
+    }
+    .btn-submit {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.8rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-submit:hover { background: #131e42; }
+    .btn-submit:active { transform: scale(0.98); }
+    .visitor-error {
+      color: var(--red);
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -526,7 +597,28 @@
 </div>
 
 <!-- ── Main ───────────────────────────────────────────────────────────── -->
-<main>
+<main style="position: relative;" id="mainContainer">
+  
+  <!-- Visitor Overlay -->
+  <div id="visitorOverlay">
+    <div class="visitor-card">
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔒</div>
+      <h3>Access Search Records</h3>
+      <p>Please enter your details to unlock the search filters and view detailed elector records.</p>
+      <form id="visitorForm" onsubmit="handleVisitorSubmit(event)">
+        <div class="field">
+          <label for="v-name">Full Name <span style="color:red">*</span></label>
+          <input type="text" id="v-name" required placeholder="Enter your full name" />
+        </div>
+        <div class="field">
+          <label for="v-mobile">Mobile Number <span style="color:red">*</span></label>
+          <input type="tel" id="v-mobile" required pattern="[0-9]{10}" placeholder="10-digit mobile number" />
+        </div>
+        <button type="submit" class="btn-submit" id="v-submitBtn">Unlock Access</button>
+        <div id="v-error" class="visitor-error"></div>
+      </form>
+    </div>
+  </div>
 
   <!-- Filter card -->
   <div class="filter-card">
@@ -724,6 +816,48 @@
   document.getElementById('f-institute').addEventListener('input', e=>{ state.institute=e.target.value; state.page=1; debounce(fetchData); });
   document.getElementById('f-part').addEventListener('input', e=>{ state.part_no=e.target.value; state.page=1; debounce(fetchData); });
   window.addEventListener('scroll', ()=>{ document.getElementById('scrollTop').classList.toggle('show', window.scrollY>400); });
+
+  // Visitor Logic
+  const hasRegistered = localStorage.getItem('visitorRegistered');
+  if (!hasRegistered) {
+    document.getElementById('visitorOverlay').classList.add('show');
+    document.getElementById('mainContainer').style.overflow = 'hidden';
+    document.getElementById('mainContainer').style.maxHeight = '800px';
+  }
+
+  async function handleVisitorSubmit(e) {
+    e.preventDefault();
+    const btn = document.getElementById('v-submitBtn');
+    const err = document.getElementById('v-error');
+    const name = document.getElementById('v-name').value;
+    const mobile = document.getElementById('v-mobile').value;
+
+    btn.textContent = 'Verifying...';
+    btn.disabled = true;
+    err.style.display = 'none';
+
+    try {
+      const fd = new FormData();
+      fd.append('name', name);
+      fd.append('mobile', mobile);
+      const res = await fetch('register_visitor.php', { method: 'POST', body: fd });
+      const data = await res.json();
+      if (data.success) {
+        localStorage.setItem('visitorRegistered', 'true');
+        document.getElementById('visitorOverlay').classList.remove('show');
+        document.getElementById('mainContainer').style.overflow = '';
+        document.getElementById('mainContainer').style.maxHeight = '';
+      } else {
+        throw new Error(data.error || 'Registration failed');
+      }
+    } catch(errObj) {
+      err.textContent = errObj.message;
+      err.style.display = 'block';
+    } finally {
+      btn.textContent = 'Unlock Access';
+      btn.disabled = false;
+    }
+  }
 
   fetchData();
 

@@ -3,11 +3,11 @@
 -- Run this FIRST in your MySQL/phpMyAdmin
 -- ============================================================
 
-CREATE DATABASE IF NOT EXISTS `election_db`
+CREATE DATABASE IF NOT EXISTS `election_clone_db`
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-USE `election_db`;
+USE `election_clone_db`;
 
 -- ============================================================
 -- Admins table
@@ -53,3 +53,13 @@ CREATE TABLE IF NOT EXISTS `electors` (
 -- Run electors_part5.sql
 -- Or use phpMyAdmin → Import → select electors_part5.sql
 -- ============================================================
+
+-- ============================================================
+-- Visitors table for public dashboard tracking
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `visitors` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(150),
+  `mobile` VARCHAR(15),
+  `visited_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

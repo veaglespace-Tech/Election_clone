@@ -33,21 +33,21 @@ Election/
 ## 🚀 Setup & Installation
 
 ### 1. Database Setup
-1. Create a MySQL database (e.g., `election_db`).
+1. Create a MySQL database (e.g., `election_clone_db`).
 2. Run `database/setup_db.sql` in MySQL / phpMyAdmin:
    ```bash
-   mysql -u root -p election_db < database/setup_db.sql
+   mysql -u root -p election_clone_db < database/setup_db.sql
    ```
 3. Import the seed data:
    ```bash
-   mysql -u root -p election_db < database/vps_seed_data.sql
+   mysql -u root -p election_clone_db < database/vps_seed_data.sql
    ```
 
 ### 2. Configure Database Connection
 Edit [api.php](file:///c:/Users/HP/Desktop/Election/api.php) to match your environment:
 ```php
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'election_db');
+define('DB_NAME', 'election_clone_db');
 define('DB_USER', 'election_app');
 define('DB_PASS', 'Veagle@12345');
 define('DB_PORT', 3306);
